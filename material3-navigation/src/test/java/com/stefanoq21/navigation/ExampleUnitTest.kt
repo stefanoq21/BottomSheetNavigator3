@@ -1,4 +1,4 @@
-package com.stefanoq21.material3_bs_navigation
+package com.stefanoq21.navigation
 
 import org.junit.Test
 

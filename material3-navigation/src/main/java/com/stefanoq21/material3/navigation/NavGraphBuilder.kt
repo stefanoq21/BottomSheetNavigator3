@@ -1,4 +1,21 @@
-package com.stefanoq21.material3_bs_navigation
+/*
+ *  Copyright 2024 stefanoq21
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
+package com.stefanoq21.material3.navigation
 
 
 import androidx.compose.foundation.layout.ColumnScope
@@ -30,9 +47,10 @@ public fun NavGraphBuilder.bottomSheet(
     deepLinks: List<NavDeepLink> = emptyList(),
     content: @Composable ColumnScope.(backstackEntry: NavBackStackEntry) -> Unit
 ) {
-    addDestination(BottomSheetNavigator.Destination(
-        provider[BottomSheetNavigator::class], content
-    ).apply {
+    addDestination(
+        BottomSheetNavigator.Destination(
+            provider[BottomSheetNavigator::class], content
+        ).apply {
         this.route = route
         arguments.fastForEach { (argumentName, argument) ->
             addArgument(argumentName, argument)

@@ -30,9 +30,9 @@ import com.stefanoq21.bottomsheetnavigator3.presentation.navigation.Screen
 import com.stefanoq21.bottomsheetnavigator3.presentation.screen.bottomSheetFullSize.BSFullScreenLayout
 import com.stefanoq21.bottomsheetnavigator3.presentation.screen.bottomSheetWithParameters.BSWithParametersLayout
 import com.stefanoq21.bottomsheetnavigator3.presentation.theme.BottomSheetNavigator3Theme
-import com.stefanoq21.material3_bs_navigation.ModalBottomSheetLayout
-import com.stefanoq21.material3_bs_navigation.bottomSheet
-import com.stefanoq21.material3_bs_navigation.rememberBottomSheetNavigator
+import com.stefanoq21.material3.navigation.ModalBottomSheetLayout
+import com.stefanoq21.material3.navigation.bottomSheet
+import com.stefanoq21.material3.navigation.rememberBottomSheetNavigator
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)

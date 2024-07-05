@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.stefanoq21.material3_bs_navigation"
+    namespace = "com.stefanoq21.material3.navigation"
     compileSdk = 34
 
     defaultConfig {
