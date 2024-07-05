@@ -74,6 +74,5 @@ dependencies {
    // implementation(libs.androidx.material)
 
     implementation(libs.kotlinx.serialization.json)
-
-    implementation(project(":Material3-BS-Navigation"))
+    implementation(project(":material3-navigation"))
 }
