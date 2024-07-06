@@ -16,7 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+  /*      maven{
+            url = uri("https://maven.pkg.github.com/stefanoq21/BottomSheetNavigator3")
+        }*/
     }
+
 }
 
 rootProject.name = "BottomSheetNavigator3"

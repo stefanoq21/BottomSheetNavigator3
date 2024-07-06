@@ -12,6 +12,7 @@ navigationCompose = "2.8.0-beta04"
 kotlinxSerializationJson = "1.7.1"
 appcompat = "1.7.0"
 material = "1.12.0"
+material3Navigation = "0.0.1-alpha01"
 
 
 [libraries]
@@ -33,6 +34,7 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+material3-navigation = { group = "com.stefanoq21", name = "material3-navigation", version.ref = "material3Navigation" }
 
 
 

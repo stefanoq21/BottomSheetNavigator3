@@ -69,10 +69,11 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
-   // implementation(libs.androidx.material.navigation)
+    // implementation(libs.androidx.material.navigation)
 
-   // implementation(libs.androidx.material)
+    // implementation(libs.androidx.material)
 
     implementation(libs.kotlinx.serialization.json)
+    //implementation(libs.material3.navigation)
     implementation(project(":material3-navigation"))
 }
