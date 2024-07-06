@@ -47,13 +47,11 @@ import androidx.navigation.NavigatorState
 import androidx.navigation.compose.LocalOwnersProvider
 import com.stefanoq21.material3.navigation.BottomSheetNavigator.Destination
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.withContext
 
 /**
  * The state of a [ModalBottomSheetLayout] that the [BottomSheetNavigator] drives
@@ -119,7 +117,8 @@ public class BottomSheetNavigator(
     internal val sheetState: SheetState
 ) : Navigator<BottomSheetNavigator.Destination>() {
 
-    var sheetEnabled by mutableStateOf(false)
+    internal var sheetEnabled by mutableStateOf(false)
+        private set
 
     private var attached by mutableStateOf(false)
 
@@ -160,6 +159,7 @@ public class BottomSheetNavigator(
      */
 
     internal var sheetContent: @Composable ColumnScope.() -> Unit = {}
+    internal var onDismissRequest: () -> Unit = {}
 
     internal val sheetInitializer: @Composable () -> Unit = {
         val saveableStateHolder = rememberSaveableStateHolder()
@@ -179,10 +179,7 @@ public class BottomSheetNavigator(
                     // Regardless of whether we're popping or pushing, we always want to hide
                     // the sheet first before deciding whether to re-show it or keep it hidden
                     try {
-                        sheetState.hide()
-                        withContext(Dispatchers.Main) {
-                            sheetEnabled = false
-                        }
+                        sheetEnabled = false
                     } catch (_: CancellationException) {
                         // We catch but ignore possible cancellation exceptions as we don't want
                         // them to bubble up and cancel the whole produceState coroutine
@@ -197,40 +194,13 @@ public class BottomSheetNavigator(
 
         if (retainedEntry != null) {
 
-            LaunchedEffect(retainedEntry) {
-                withContext(Dispatchers.Main) {
-                    sheetEnabled = true
-                }
-                sheetState.show()
-
-            }
-
             BackHandler {
-                state.popWithTransition(popUpTo = retainedEntry!!, saveState = false)
+                sheetEnabled = false
+                state.pop(popUpTo = retainedEntry!!, saveState = false)
             }
 
-        }
-
-        if (retainedEntry != null) {
             val currentOnSheetShown by rememberUpdatedState {
                 transitionsInProgressEntries.forEach(state::markTransitionComplete)
-            }
-            val currentOnSheetDismissed by rememberUpdatedState {
-
-                sheetEnabled = false
-
-                // Sheet dismissal can be started through popBackStack in which case we have a
-                // transition that we'll want to complete
-                if (transitionsInProgressEntries.contains(retainedEntry)) {
-                    state.markTransitionComplete(retainedEntry!!)
-                }
-                // If there is no transition in progress, the sheet has been dimissed by the
-                // user (for example by tapping on the scrim or through an accessibility action)
-                // In this case, we will immediately pop without a transition as the sheet has
-                // already been hidden
-                else {
-                    state.pop(popUpTo = retainedEntry!!, saveState = false)
-                }
             }
             LaunchedEffect(sheetState, retainedEntry) {
                 snapshotFlow { sheetState.isVisible }
@@ -241,21 +211,43 @@ public class BottomSheetNavigator(
                     .collect { visible ->
                         if (visible) {
                             currentOnSheetShown()
-                        } else {
-                            currentOnSheetDismissed()
                         }
                     }
             }
 
-            sheetContent = {
-                retainedEntry!!.LocalOwnersProvider(saveableStateHolder) {
-                    val content =
-                        (retainedEntry!!.destination as BottomSheetNavigator.Destination).content
-                    content(retainedEntry!!)
+            LaunchedEffect(key1 = retainedEntry) {
+                sheetEnabled = true
+
+                sheetContent = {
+                    retainedEntry!!.LocalOwnersProvider(saveableStateHolder) {
+                        val content =
+                            (retainedEntry!!.destination as BottomSheetNavigator.Destination).content
+                        content(retainedEntry!!)
+                    }
+                }
+                onDismissRequest = {
+                    sheetEnabled = false
+
+                    // Sheet dismissal can be started through popBackStack in which case we have a
+                    // transition that we'll want to complete
+                    if (transitionsInProgressEntries.contains(retainedEntry)) {
+                        state.markTransitionComplete(retainedEntry!!)
+                    }
+                    // If there is no transition in progress, the sheet has been dimissed by the
+                    // user (for example by tapping on the scrim or through an accessibility action)
+                    // In this case, we will immediately pop without a transition as the sheet has
+                    // already been hidden
+                    else {
+                        state.pop(popUpTo = retainedEntry!!, saveState = false)
+                    }
                 }
             }
+
         } else {
-            sheetContent = {}
+            LaunchedEffect(key1 = Unit) {
+                sheetContent = {}
+                onDismissRequest = {}
+            }
         }
 
 
@@ -277,12 +269,12 @@ public class BottomSheetNavigator(
         navigatorExtras: Extras?
     ) {
         entries.fastForEach { entry ->
-            state.pushWithTransition(entry)
+            state.push(entry)
         }
     }
 
     override fun popBackStack(popUpTo: NavBackStackEntry, savedState: Boolean) {
-        state.popWithTransition(popUpTo, savedState)
+        state.pop(popUpTo, savedState)
     }
 
     /**

@@ -52,7 +52,7 @@ fun ModalBottomSheetLayout(
 
     if (bottomSheetNavigator.sheetEnabled) {
         ModalBottomSheet(
-            onDismissRequest = {},
+            onDismissRequest = bottomSheetNavigator.onDismissRequest,
             sheetState = bottomSheetNavigator.sheetState,
             content = bottomSheetNavigator.sheetContent,
             sheetMaxWidth = sheetMaxWidth,
