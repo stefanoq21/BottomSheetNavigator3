@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.Dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun ModalBottomSheetLayout(
+fun ModalBottomSheetLayout(
     bottomSheetNavigator: BottomSheetNavigator,
     modifier: Modifier = Modifier,
     sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,

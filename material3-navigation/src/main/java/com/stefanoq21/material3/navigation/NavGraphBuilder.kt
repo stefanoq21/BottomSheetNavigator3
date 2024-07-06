@@ -41,7 +41,7 @@ import kotlin.reflect.KType
  * @param deepLinks list of deep links to associate with the destinations
  * @param content the sheet content at the given destination
  */
-public fun NavGraphBuilder.bottomSheet(
+fun NavGraphBuilder.bottomSheet(
     route: String,
     arguments: List<NamedNavArgument> = emptyList(),
     deepLinks: List<NavDeepLink> = emptyList(),
@@ -62,7 +62,7 @@ public fun NavGraphBuilder.bottomSheet(
 }
 
 
-public inline fun <reified T : Any> NavGraphBuilder.bottomSheet(
+inline fun <reified T : Any> NavGraphBuilder.bottomSheet(
     deepLinks: List<NavDeepLink> = emptyList(),
     noinline content: @Composable ColumnScope.(backstackEntry: NavBackStackEntry) -> Unit
 ) {
@@ -82,13 +82,13 @@ public inline fun <reified T : Any> NavGraphBuilder.bottomSheet(
 
 /** DSL for constructing a new [ComposeNavigator.Destination] */
 @NavDestinationDsl
-public class BottomSheetNavigatorDestinationBuilder :
+class BottomSheetNavigatorDestinationBuilder :
     NavDestinationBuilder<BottomSheetNavigator.Destination> {
 
     private val composeNavigator: BottomSheetNavigator
     private val content: @Composable ColumnScope.(NavBackStackEntry) -> Unit
 
-    public constructor(
+    constructor(
         navigator: BottomSheetNavigator,
         route: String,
         content: @Composable ColumnScope.(NavBackStackEntry) -> Unit
@@ -97,7 +97,7 @@ public class BottomSheetNavigatorDestinationBuilder :
         this.content = content
     }
 
-    public constructor(
+    constructor(
         navigator: BottomSheetNavigator,
         route: KClass<*>,
         typeMap: Map<KType, @JvmSuppressWildcards NavType<*>>,

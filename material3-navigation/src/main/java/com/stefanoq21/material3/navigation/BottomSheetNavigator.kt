@@ -119,7 +119,6 @@ public class BottomSheetNavigator(
     internal val sheetState: SheetState
 ) : Navigator<BottomSheetNavigator.Destination>() {
 
-    //todo added by me
     var sheetEnabled by mutableStateOf(false)
 
     private var attached by mutableStateOf(false)
@@ -142,7 +141,7 @@ public class BottomSheetNavigator(
      * composed before the Navigator is attached, so we specifically return an empty flow if we
      * aren't attached yet.
      */
-    internal val transitionsInProgress: StateFlow<Set<NavBackStackEntry>>
+    private val transitionsInProgress: StateFlow<Set<NavBackStackEntry>>
         get() = if (attached) {
             state.transitionsInProgress
         } else {
