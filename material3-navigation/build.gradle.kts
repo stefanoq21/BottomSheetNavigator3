@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -43,20 +45,39 @@ android {
 }
 
 dependencies {
-
-   /* implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)*/
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
-    //implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.navigation.compose)
+
+}
+
+//./gradlew.publish
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.stefanoq21"
+            artifactId = "material3-navigation"
+            version = "0.0.1-alpha01"
+            artifact("$buildDir/outputs/aar/material3-navigation-release.aar")
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/stefanoq21/BottomSheetNavigator3")
+                credentials {
+                    val properties = Properties()
+                    properties.load(project.rootProject.file("local.properties").reader())
+                    username = properties.getProperty("githubUserName") as String
+                    password = properties.getProperty("githubToken") as String
+                }
+            }
+        }
+
+    }
 }
