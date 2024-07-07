@@ -16,6 +16,8 @@ sealed interface Screen {
     @Serializable
     data class BottomSheetWithParameters(val id: String) : Screen
 
+    @Serializable
+    data object BottomSheetWithCloseScreen : Screen
 
 }
 

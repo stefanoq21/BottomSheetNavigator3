@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.stefanoq21.bottomsheetnavigator3.presentation.navigation.Screen
 import com.stefanoq21.bottomsheetnavigator3.presentation.screen.bottomSheetFullSize.BSFullScreenLayout
+import com.stefanoq21.bottomsheetnavigator3.presentation.screen.bottomSheetWithClose.BSWithCloseLayout
 import com.stefanoq21.bottomsheetnavigator3.presentation.screen.bottomSheetWithParameters.BSWithParametersLayout
 import com.stefanoq21.bottomsheetnavigator3.presentation.theme.BottomSheetNavigator3Theme
 import com.stefanoq21.material3.navigation.ModalBottomSheetLayout
@@ -72,6 +73,10 @@ class MainActivity : ComponentActivity() {
                                         Text(text = "BottomSheetFullScreen")
                                     }
 
+                                    Button(onClick = { navController.navigate(Screen.BottomSheetWithCloseScreen) }) {
+                                        Text(text = "BottomSheetWithCloseScreen")
+                                    }
+
                                     Button(onClick = {
                                         navController.navigate(
                                             Screen.BottomSheetWithParameters(
@@ -85,16 +90,16 @@ class MainActivity : ComponentActivity() {
                                     var showBottomSheet by remember {
                                         mutableStateOf(false)
                                     }
-                                    Button(onClick = {showBottomSheet= true }) {
+                                    Button(onClick = { showBottomSheet = true }) {
                                         Text(text = "BottomSheetOutsideNav")
                                     }
 
-                                    if(showBottomSheet){
+                                    if (showBottomSheet) {
                                         ModalBottomSheet(
                                             onDismissRequest = {
-                                                showBottomSheet= false
+                                                showBottomSheet = false
                                             },
-                                            content ={
+                                            content = {
                                                 Text(text = "ModalBottomSheet outside navigation")
                                             },
                                         )
@@ -112,6 +117,12 @@ class MainActivity : ComponentActivity() {
 
                             bottomSheet<Screen.BottomSheetFullScreen> {
                                 BSFullScreenLayout()
+                            }
+
+                            bottomSheet<Screen.BottomSheetWithCloseScreen> {
+                                BSWithCloseLayout {
+                                   onBackPressedDispatcher.onBackPressed()
+                                }
                             }
                             bottomSheet<Screen.BottomSheetWithParameters> { backStackEntry ->
                                 val id =
