@@ -64,7 +64,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "io.github.stefanoq21"
             artifactId = "material3-navigation"
-            version = "0.0.4"
+            version = "0.0.5"
             artifact("$buildDir/outputs/aar/material3-navigation-release.aar")
         }
 
@@ -80,6 +80,5 @@ publishing {
                 }
             }
         }
-
     }
 }
