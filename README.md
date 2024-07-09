@@ -1,7 +1,11 @@
 # Material3 BottomSheet Navigation
 
-This library provides a navigation solution for Compose projects using Material3 BottomSheets. It allows you to define your BottomSheet as navigation routes, eliminating the need for the `androidx.compose.material.navigation` and ` androidx.compose.material:material` libraries. This simplifies your app's dependencies and ensures a consistent Material3 experience.
+This library provides a navigation solution for Compose projects using Material3 BottomSheets. It allows you to define your BottomSheet as navigation routes, eliminating the need for the `androidx.compose.material.navigation` and ` androidx.compose.material:material` !
+libraries. This simplifies your app's dependencies and ensures a consistent Material3 experience.
 This library also leverages the new functionality from `androidx.navigation:navigation-compose:2.8.0-beta0X` to allow you to define routes with serialized classes.
+
+## Preview
+![](https://github.com/stefanoq21/BottomSheetNavigator3/assets/22545898/c971f6cf-bb04-41c1-b3ea-7b72757e09af)
 
 ## Implementation
 
@@ -90,7 +94,7 @@ Define your routes as strings or data class (depend on the compose navigation ve
                             }
 ...
 ```
-Everythign is ready! Just navigate to your new destination as usual:
+Everything is ready! Just navigate to your new destination as usual:
 ```
 ...
 Button(onClick = { navController.navigate(Screen.BottomSheetFullScreen) }) {
