@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -52,6 +53,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 
 /**
  * The state of a [ModalBottomSheetLayout] that the [BottomSheetNavigator] drives
@@ -193,12 +195,6 @@ public class BottomSheetNavigator(
         }
 
         if (retainedEntry != null) {
-
-            BackHandler {
-                sheetEnabled = false
-                state.pop(popUpTo = retainedEntry!!, saveState = false)
-            }
-
             val currentOnSheetShown by rememberUpdatedState {
                 transitionsInProgressEntries.forEach(state::markTransitionComplete)
             }
@@ -241,6 +237,17 @@ public class BottomSheetNavigator(
                         state.pop(popUpTo = retainedEntry!!, saveState = false)
                     }
                 }
+            }
+
+            val scope = rememberCoroutineScope()
+            BackHandler {
+                scope
+                    .launch { sheetState.hide() }
+                    .invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            onDismissRequest()
+                        }
+                    }
             }
 
         } else {
