@@ -12,38 +12,13 @@ This library also leverages the new functionality from `androidx.navigation:navi
 You can follow the implementation approach used in the  [app](https://github.com/stefanoq21/BottomSheetNavigator3/tree/main/app "app") module. Alternatively, you can find a detailed explanation below.
 
 ### Dependencies
-Refine your `settings.gradle.kts`
-```
-...
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/stefanoq21/BottomSheetNavigator3")
-           credentials {
-                val properties = Properties()
-                properties.load(file("local.properties").reader())
-                username = properties.getProperty("githubUserName") as String
-                password = properties.getProperty("githubToken") as String
-            }
-        }
-    }
-}
-```
-Add your github credential to your `local.properties`
-```
-...
-githubToken=blablabla
-githubUserName=your-github-username
-```
+The library is now available on MavenCentral!!! 
 Add the dependencies to your `libs.versions.toml`
 ```
 [versions]
 ...
 navigationCompose = "2.8.0-beta04"
-material3Navigation = "0.0.3"
+material3Navigation = "X.X.X" current release version
 material3 = "1.3.0-beta04"
 
 [libraries]
