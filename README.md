@@ -4,9 +4,6 @@ This library provides a navigation solution for Compose projects using Material3
 libraries. This simplifies your app's dependencies and ensures a consistent Material3 experience.
 This library also leverages the new functionality from `androidx.navigation:navigation-compose:2.8.0-beta0X` to allow you to define routes with serialized classes.
 
-## Preview
-![](https://github.com/stefanoq21/BottomSheetNavigator3/assets/22545898/c971f6cf-bb04-41c1-b3ea-7b72757e09af)
-
 ## Implementation
 
 You can follow the implementation approach used in the  [app](https://github.com/stefanoq21/BottomSheetNavigator3/tree/main/app "app") module. Alternatively, you can find a detailed explanation below.
@@ -80,6 +77,10 @@ Button(onClick = { navController.navigate(Screen.BottomSheetFullScreen) }) {
 ### Customization
 
 The library currently supports the same customization options of the standard `androidx.compose.material3.ModalBottomSheet`. You can customize the appearance of the all the bottomsheets used in your navigation graph by passing the parameters to the `ModalBottomSheetLayout`.
+
+## Preview
+![](https://github.com/stefanoq21/BottomSheetNavigator3/assets/22545898/c971f6cf-bb04-41c1-b3ea-7b72757e09af)
+
 
 ## Contributing
 
