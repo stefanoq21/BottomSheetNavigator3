@@ -4,6 +4,8 @@ This library provides a navigation solution for Compose projects using Material3
 libraries. This simplifies your app's dependencies and ensures a consistent Material3 experience.
 This library also leverages the new functionality from `androidx.navigation:navigation-compose:2.8.0-beta0X` to allow you to define routes with serialized classes.
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.stefanoq21/material3-navigation)](https://central.sonatype.com/artifact/io.github.stefanoq21/material3-navigation)
+
 ## Implementation
 
 You can follow the implementation approach used in the  [app](https://github.com/stefanoq21/BottomSheetNavigator3/tree/main/app "app") module. Alternatively, you can find a detailed explanation below.
