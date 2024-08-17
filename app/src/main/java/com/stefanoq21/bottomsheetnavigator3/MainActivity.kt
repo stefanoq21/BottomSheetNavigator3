@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
 
                             bottomSheet<Screen.BottomSheetWithCloseScreen> {
                                 BSWithCloseLayout {
-                                   onBackPressedDispatcher.onBackPressed()
+                                    navController.popBackStack()
                                 }
                             }
                             bottomSheet<Screen.BottomSheetWithParameters> { backStackEntry ->

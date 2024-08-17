@@ -64,13 +64,14 @@ fun NavGraphBuilder.bottomSheet(
 
 inline fun <reified T : Any> NavGraphBuilder.bottomSheet(
     deepLinks: List<NavDeepLink> = emptyList(),
+    typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
     noinline content: @Composable ColumnScope.(backstackEntry: NavBackStackEntry) -> Unit
 ) {
     destination(
         BottomSheetNavigatorDestinationBuilder(
             provider[BottomSheetNavigator::class],
             T::class,
-            emptyMap(),
+            typeMap,
             content
         )
             .apply {

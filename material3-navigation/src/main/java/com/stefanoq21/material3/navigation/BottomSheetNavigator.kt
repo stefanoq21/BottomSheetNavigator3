@@ -20,7 +20,6 @@
 package com.stefanoq21.material3.navigation
 
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -117,7 +116,7 @@ public fun rememberBottomSheetNavigator(
 @Navigator.Name("bottomSheet")
 public class BottomSheetNavigator(
     internal val sheetState: SheetState
-) : Navigator<BottomSheetNavigator.Destination>() {
+) : Navigator<Destination>() {
 
     internal var sheetEnabled by mutableStateOf(false)
         private set
@@ -162,6 +161,9 @@ public class BottomSheetNavigator(
 
     internal var sheetContent: @Composable ColumnScope.() -> Unit = {}
     internal var onDismissRequest: () -> Unit = {}
+
+    private var animateToDismiss: () -> Unit = {}
+
 
     internal val sheetInitializer: @Composable () -> Unit = {
         val saveableStateHolder = rememberSaveableStateHolder()
@@ -211,13 +213,15 @@ public class BottomSheetNavigator(
                     }
             }
 
+            val scope = rememberCoroutineScope()
+
             LaunchedEffect(key1 = retainedEntry) {
                 sheetEnabled = true
 
                 sheetContent = {
                     retainedEntry!!.LocalOwnersProvider(saveableStateHolder) {
                         val content =
-                            (retainedEntry!!.destination as BottomSheetNavigator.Destination).content
+                            (retainedEntry!!.destination as Destination).content
                         content(retainedEntry!!)
                     }
                 }
@@ -237,23 +241,21 @@ public class BottomSheetNavigator(
                         state.pop(popUpTo = retainedEntry!!, saveState = false)
                     }
                 }
-            }
 
-            val scope = rememberCoroutineScope()
-            BackHandler {
-                scope
-                    .launch { sheetState.hide() }
-                    .invokeOnCompletion {
-                        if (!sheetState.isVisible) {
+                animateToDismiss = {
+                    scope
+                        .launch { sheetState.hide() }
+                        .invokeOnCompletion {
                             onDismissRequest()
                         }
-                    }
+                }
             }
 
         } else {
             LaunchedEffect(key1 = Unit) {
                 sheetContent = {}
                 onDismissRequest = {}
+                animateToDismiss = {}
             }
         }
 
@@ -281,7 +283,7 @@ public class BottomSheetNavigator(
     }
 
     override fun popBackStack(popUpTo: NavBackStackEntry, savedState: Boolean) {
-        state.pop(popUpTo, savedState)
+        animateToDismiss()
     }
 
     /**
