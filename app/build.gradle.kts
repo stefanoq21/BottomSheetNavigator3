@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.stefanoq21.bottomsheetnavigator3"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.stefanoq21.bottomsheetnavigator3"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 8
         versionName = "0.0.5"
 
@@ -74,6 +74,6 @@ dependencies {
     // implementation(libs.androidx.material)
 
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.material3.navigation)
-    //implementation(project(":material3-navigation"))
+    //implementation(libs.material3.navigation)
+    implementation(project(":material3-navigation"))
 }
