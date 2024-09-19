@@ -227,19 +227,6 @@ public class BottomSheetNavigator(
                 }
                 onDismissRequest = {
                     sheetEnabled = false
-
-                    // Sheet dismissal can be started through popBackStack in which case we have a
-                    // transition that we'll want to complete
-                    if (transitionsInProgressEntries.contains(retainedEntry)) {
-                        state.markTransitionComplete(retainedEntry!!)
-                    }
-                    // If there is no transition in progress, the sheet has been dimissed by the
-                    // user (for example by tapping on the scrim or through an accessibility action)
-                    // In this case, we will immediately pop without a transition as the sheet has
-                    // already been hidden
-                    else {
-                        state.pop(popUpTo = retainedEntry!!, saveState = false)
-                    }
                 }
 
                 animateToDismiss = {

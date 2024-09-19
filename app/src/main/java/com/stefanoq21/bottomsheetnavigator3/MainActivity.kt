@@ -12,13 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -87,23 +82,17 @@ class MainActivity : ComponentActivity() {
                                         Text(text = "BottomSheetWithParameters")
                                     }
 
-                                    var showBottomSheet by remember {
-                                        mutableStateOf(false)
-                                    }
-                                    Button(onClick = { showBottomSheet = true }) {
-                                        Text(text = "BottomSheetOutsideNav")
+                                      Button(onClick = {
+                                        navController.navigate(
+                                            Screen.Zoom(
+                                                "testId-123"
+                                            )
+                                        )
+                                    }) {
+                                        Text(text = "Zoom")
                                     }
 
-                                    if (showBottomSheet) {
-                                        ModalBottomSheet(
-                                            onDismissRequest = {
-                                                showBottomSheet = false
-                                            },
-                                            content = {
-                                                Text(text = "ModalBottomSheet outside navigation")
-                                            },
-                                        )
-                                    }
+
 
                                 }
 
@@ -120,9 +109,21 @@ class MainActivity : ComponentActivity() {
                             }
 
                             bottomSheet<Screen.BottomSheetWithCloseScreen> {
-                                BSWithCloseLayout {
-                                    navController.popBackStack()
-                                }
+                                BSWithCloseLayout(
+                                    onClickGoToZoom = {
+                                        navController.navigate(
+                                            Screen.Zoom(
+                                                "testId-123"
+                                            )
+                                        )
+                                    },
+                                    onClickClose = {
+                                        navController.popBackStack()
+                                    },
+                                    onClickGoToBottomSheet = {
+                                        navController.navigate(Screen.BottomSheetWithParameters("testId-123"))
+                                    }
+                                )
                             }
                             bottomSheet<Screen.BottomSheetWithParameters> { backStackEntry ->
                                 val id =

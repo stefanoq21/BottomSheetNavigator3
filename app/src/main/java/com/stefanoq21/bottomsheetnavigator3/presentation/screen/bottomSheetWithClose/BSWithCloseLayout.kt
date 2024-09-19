@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun BSWithCloseLayout(onClickClose: () -> Unit) {
+fun BSWithCloseLayout(onClickClose: () -> Unit, onClickGoToZoom: () -> Unit,  onClickGoToBottomSheet: () -> Unit) {
     Column(modifier = Modifier) {
         Text(
             text = "BottomSheet Title",
@@ -34,6 +34,26 @@ fun BSWithCloseLayout(onClickClose: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+        Button(
+            onClick = onClickGoToZoom,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(text = "Zoom")
+        }
+
+         Button(
+            onClick = onClickGoToBottomSheet,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(text = "To BottomSheet")
+        }
+
+
+
 
         Button(
             onClick = onClickClose,
