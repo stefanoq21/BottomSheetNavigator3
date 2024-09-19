@@ -16,9 +16,9 @@ Add the dependencies to your `libs.versions.toml`
 ```
 [versions]
 ...
-navigationCompose = "2.8.0-beta04"
+navigationCompose = "2.8.0"
 material3Navigation = "X.X.X" current release version
-material3 = "1.3.0-beta04"
+material3 = "1.3.0"
 
 [libraries]
 ...
