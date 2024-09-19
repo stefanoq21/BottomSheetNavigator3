@@ -31,7 +31,6 @@ import com.stefanoq21.material3.navigation.bottomSheet
 import com.stefanoq21.material3.navigation.rememberBottomSheetNavigator
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
