@@ -16,14 +16,10 @@ Add the dependencies to your `libs.versions.toml`
 ```
 [versions]
 ...
-navigationCompose = "2.8.0"
 material3Navigation = "X.X.X" current release version
-material3 = "1.3.0"
 
 [libraries]
 ...
-androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3"}
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 material3-navigation = { group = "io.github.stefanoq21", name = "material3-navigation", version.ref = "material3Navigation" }
 
 ```
@@ -32,8 +28,6 @@ In your `build.gradle.kts` implement your dependencies:
 ...
 dependencies {
 ...
- implementation(libs.androidx.material3)
- implementation(libs.androidx.navigation.compose)
  implementation(libs.material3.navigation)
 ```
 ### Usage
