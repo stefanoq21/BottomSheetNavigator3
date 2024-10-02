@@ -25,9 +25,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 
 
@@ -52,11 +54,20 @@ fun ModalBottomSheetLayout(
         content()
     }
 
+
+    val context = LocalContext.current
+
     if (bottomSheetNavigator.sheetEnabled) {
         ModalBottomSheet(
             onDismissRequest = bottomSheetNavigator.onDismissRequest,
             sheetState = bottomSheetNavigator.sheetState,
-            content = bottomSheetNavigator.sheetContent,
+            content = {
+                CompositionLocalProvider(
+                    LocalContext provides context
+                ) {
+                    bottomSheetNavigator.sheetContent(this)
+                }
+            },
             sheetMaxWidth = sheetMaxWidth,
             shape = shape,
             containerColor = containerColor,
