@@ -30,6 +30,7 @@ import com.stefanoq21.bottomsheetnavigator3.presentation.theme.BottomSheetNaviga
 import com.stefanoq21.material3.navigation.ModalBottomSheetLayout
 import com.stefanoq21.material3.navigation.bottomSheet
 import com.stefanoq21.material3.navigation.rememberBottomSheetNavigator
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,9 +103,15 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<Screen.Zoom> { backStackEntry ->
                                 val id = backStackEntry.toRoute<Screen.Zoom>().id
-                                Text(
-                                    text = "Zoom  param:$id",
-                                )
+                                Column {
+                                    Text(
+                                        text = "Zoom  param:$id",
+                                    )
+                                    Button(onClick = { navController.navigate(Screen.BottomSheetWithCloseScreen) }) {
+                                        Text(text = "BottomSheetWithCloseScreen")
+                                    }
+                                }
+
                             }
 
                             bottomSheet<Screen.BottomSheetFullScreen> {
@@ -116,12 +123,12 @@ class MainActivity : ComponentActivity() {
                                     onClickGoToZoom = {
                                         navController.navigate(
                                             Screen.Zoom(
-                                                "testId-123"
+                                                "${Random.nextInt(0,100)}"
                                             )
                                         )
                                     },
                                     onClickClose = {
-                                        navController.navigateUp()
+                                        navController.popBackStack()
                                     },
                                     onClickBack = {
                                         onBackPressedDispatcher.onBackPressed()

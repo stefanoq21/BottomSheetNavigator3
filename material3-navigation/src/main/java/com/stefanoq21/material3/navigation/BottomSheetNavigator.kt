@@ -20,6 +20,7 @@
 package com.stefanoq21.material3.navigation
 
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -219,14 +220,20 @@ public class BottomSheetNavigator(
                 sheetEnabled = true
 
                 sheetContent = {
-                    retainedEntry!!.LocalOwnersProvider(saveableStateHolder) {
-                        val content =
-                            (retainedEntry!!.destination as Destination).content
-                        content(retainedEntry!!)
+                    retainedEntry?.let { retainedEntry ->
+                        retainedEntry.LocalOwnersProvider(saveableStateHolder) {
+                            val content =
+                                (retainedEntry.destination as Destination).content
+                            content(retainedEntry)
+                        }
                     }
+
                 }
                 onDismissRequest = {
                     sheetEnabled = false
+                    retainedEntry?.let {
+                        state.pop(popUpTo = it, saveState = false)
+                    }
                 }
 
                 animateToDismiss = {
@@ -236,6 +243,10 @@ public class BottomSheetNavigator(
                             onDismissRequest()
                         }
                 }
+            }
+
+            BackHandler {
+                animateToDismiss()
             }
 
         } else {
@@ -264,13 +275,14 @@ public class BottomSheetNavigator(
         navOptions: NavOptions?,
         navigatorExtras: Extras?
     ) {
+        onDismissRequest()
         entries.fastForEach { entry ->
             state.push(entry)
         }
     }
 
     override fun popBackStack(popUpTo: NavBackStackEntry, savedState: Boolean) {
-        animateToDismiss()
+        state.pop(popUpTo, savedState)
     }
 
     /**
