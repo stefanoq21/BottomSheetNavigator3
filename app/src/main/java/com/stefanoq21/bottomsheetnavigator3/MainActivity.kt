@@ -1,6 +1,7 @@
 package com.stefanoq21.bottomsheetnavigator3
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.stefanoq21.bottomsheetnavigator3.presentation.navigation.Screen
@@ -39,7 +41,10 @@ class MainActivity : ComponentActivity() {
                 val bottomSheetNavigator =
                     rememberBottomSheetNavigator(skipPartiallyExpanded = true)
                 val navController = rememberNavController(bottomSheetNavigator)
-
+               val routes = navController.currentBackStackEntryAsState()
+                navController.addOnDestinationChangedListener { controller, _, _ ->
+                    Log.d("BackStackLog", "BackStack: ${routes.value}")
+                }
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                     ModalBottomSheetLayout(
@@ -116,7 +121,10 @@ class MainActivity : ComponentActivity() {
                                         )
                                     },
                                     onClickClose = {
-                                        navController.popBackStack()
+                                        navController.navigateUp()
+                                    },
+                                    onClickBack = {
+                                        onBackPressedDispatcher.onBackPressed()
                                     },
                                     onClickGoToBottomSheet = {
                                         navController.navigate(Screen.BottomSheetWithParameters("testId-123"))
