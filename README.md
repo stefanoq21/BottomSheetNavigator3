@@ -6,6 +6,8 @@ This library also leverages the new functionality from `androidx.navigation:navi
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.stefanoq21/material3-navigation)](https://central.sonatype.com/artifact/io.github.stefanoq21/material3-navigation)
 
+![Static Badge](https://img.shields.io/badge/minSdk-21-blue?link=https%3A%2F%2Fgithub.com%2Fstefanoq21%2FBottomSheetNavigator3%2Fblob%2Fmain%2Fmaterial3-navigation%2Fbuild.gradle.kts%23L15)
+
 ## Implementation
 
 You can follow the implementation approach used in the  [app](https://github.com/stefanoq21/BottomSheetNavigator3/tree/main/app "app") module. Alternatively, you can find a detailed explanation below.
@@ -70,6 +72,11 @@ Button(onClick = { navController.navigate(Screen.BottomSheetFullScreen) }) {
                                     }
 ...
 ```
+
+### Navigating Back from a Bottom Sheet
+
+To implement a back or close button in your bottom sheet, I suggest to use `onBackPressedDispatcher.onBackPressed()`. This because if you use  `navController.popBackStack()` the animation will not appear. The animation was disabled, in this case, to avoid problems during the navigation that start from bottomshets.
+
 ### Customization
 
 The library currently supports the same customization options of the standard `androidx.compose.material3.ModalBottomSheet`. You can customize the appearance of the all the bottomsheets used in your navigation graph by passing the parameters to the `ModalBottomSheetLayout`.
