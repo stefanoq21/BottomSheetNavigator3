@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import com.stefanoq21.material3.navigation.rememberBottomSheetNavigator
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 val bottomSheetNavigator =
                     rememberBottomSheetNavigator(skipPartiallyExpanded = true)
                 val navController = rememberNavController(bottomSheetNavigator)
-               val routes = navController.currentBackStackEntryAsState()
+                val routes = navController.currentBackStackEntryAsState()
                 navController.addOnDestinationChangedListener { controller, _, _ ->
                     Log.d("BackStackLog", "BackStack: ${routes.value}")
                 }
@@ -53,7 +55,11 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                             .padding(12.dp),
-                        bottomSheetNavigator = bottomSheetNavigator
+                        bottomSheetNavigator = bottomSheetNavigator,
+                        /*properties = ModalBottomSheetProperties(
+                            isAppearanceLightStatusBars = !isSystemInDarkTheme(),
+                            isAppearanceLightNavigationBars = !isSystemInDarkTheme()
+                        )*/
                     ) {
                         NavHost(
                             navController = navController,
@@ -86,7 +92,7 @@ class MainActivity : ComponentActivity() {
                                         Text(text = "BottomSheetWithParameters")
                                     }
 
-                                      Button(onClick = {
+                                    Button(onClick = {
                                         navController.navigate(
                                             Screen.Zoom(
                                                 "testId-123"
@@ -95,7 +101,6 @@ class MainActivity : ComponentActivity() {
                                     }) {
                                         Text(text = "Zoom")
                                     }
-
 
 
                                 }
@@ -123,7 +128,7 @@ class MainActivity : ComponentActivity() {
                                     onClickGoToZoom = {
                                         navController.navigate(
                                             Screen.Zoom(
-                                                "${Random.nextInt(0,100)}"
+                                                "${Random.nextInt(0, 100)}"
                                             )
                                         )
                                     },
