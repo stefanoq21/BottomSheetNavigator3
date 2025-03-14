@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.Dp
 fun ModalBottomSheetLayout(
     bottomSheetNavigator: BottomSheetNavigator,
     modifier: Modifier = Modifier,
+    sheetModifier: Modifier = Modifier,
     sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
     shape: Shape = BottomSheetDefaults.ExpandedShape,
     containerColor: Color = BottomSheetDefaults.ContainerColor,
@@ -63,6 +64,7 @@ fun ModalBottomSheetLayout(
     if (bottomSheetNavigator.sheetEnabled) {
         ModalBottomSheet(
             onDismissRequest = bottomSheetNavigator.onDismissRequest,
+            modifier = sheetModifier,
             sheetState = bottomSheetNavigator.sheetState,
             content = {
                 CompositionLocalProvider(
