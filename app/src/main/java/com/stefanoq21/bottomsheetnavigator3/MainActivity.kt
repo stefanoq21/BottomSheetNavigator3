@@ -55,6 +55,9 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                             .padding(12.dp),
+                        /*sheetModifier = Modifier.windowInsetsPadding(
+                            WindowInsets.systemBars.only(WindowInsetsSides.Top)
+                        ),*/
                         bottomSheetNavigator = bottomSheetNavigator,
                         /*properties = ModalBottomSheetProperties(
                             isAppearanceLightStatusBars = !isSystemInDarkTheme(),
