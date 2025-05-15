@@ -86,10 +86,12 @@ public class BottomSheetNavigatorSheetState(private val sheetState: SheetState) 
 @Composable
 public fun rememberBottomSheetNavigator(
     skipPartiallyExpanded: Boolean = false,
+    confirmValueChange: (SheetValue) -> Boolean = { true },
 ): BottomSheetNavigator {
 
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = skipPartiallyExpanded
+        skipPartiallyExpanded = skipPartiallyExpanded,
+        confirmValueChange = confirmValueChange
     )
 
     return remember(sheetState) { BottomSheetNavigator(sheetState) }
