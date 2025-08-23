@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +17,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.stefanoq21.bottomsheetnavigator3.presentation.navigation.Screen
@@ -64,6 +67,7 @@ class MainActivity : ComponentActivity() {
                             isAppearanceLightNavigationBars = !isSystemInDarkTheme()
                         )*/
                     ) {
+
                         NavHost(
                             navController = navController,
                             startDestination = Screen.Home
@@ -104,7 +108,9 @@ class MainActivity : ComponentActivity() {
                                     }) {
                                         Text(text = "Zoom")
                                     }
-
+                                    Button(onClick = { navController.navigate(Screen.DialogTestScreen) }) {
+                                        Text("dialog")
+                                    }
 
                                 }
 
@@ -137,6 +143,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onClickClose = {
                                         navController.popBackStack()
+                                        // navController.navigate(Screen.DialogTestScreen)
                                     },
                                     onClickBack = {
                                         onBackPressedDispatcher.onBackPressed()
@@ -145,13 +152,35 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(Screen.BottomSheetWithParameters("testId-123"))
                                     }
                                 )
+
+                                Button(onClick = { navController.navigate(Screen.DialogTestScreen) }) {
+                                    Text("dialog")
+                                }
+
                             }
                             bottomSheet<Screen.BottomSheetWithParameters> { backStackEntry ->
                                 val id =
                                     backStackEntry.toRoute<Screen.BottomSheetWithParameters>().id
                                 BSWithParametersLayout(id)
                             }
+
+
+                            dialog<Screen.DialogTestScreen> {
+                                Column(Modifier.background(Color.White)) {
+                                    Text(
+                                        text = "Dialog",
+                                    )
+                                    Button(onClick = { onBackPressedDispatcher.onBackPressed() }) {
+                                        Text(text = "exit")
+                                    }
+                                    Button(onClick = { navController.navigate(Screen.DialogTestScreen) }) {
+                                        Text(text = "Button")
+                                    }
+                                }
+                            }
+
                         }
+
                     }
                 }
             }

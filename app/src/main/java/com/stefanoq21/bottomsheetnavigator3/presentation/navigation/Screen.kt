@@ -19,6 +19,9 @@ sealed interface Screen {
     @Serializable
     data object BottomSheetWithCloseScreen : Screen
 
+    @Serializable
+    data object DialogTestScreen : Screen
+
 }
 
 
