@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.stefanoq21.bottomsheetnavigator3"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.stefanoq21.bottomsheetnavigator3"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 18
         versionName = "1.0.3"
 
