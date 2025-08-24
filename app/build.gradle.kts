@@ -14,8 +14,8 @@ android {
         applicationId = "com.stefanoq21.bottomsheetnavigator3"
         minSdk = 21
         targetSdk = 36
-        versionCode = 18
-        versionName = "1.0.3"
+        versionCode = 19
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
