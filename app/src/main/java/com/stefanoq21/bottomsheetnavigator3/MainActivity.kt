@@ -11,11 +11,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -154,9 +159,26 @@ class MainActivity : ComponentActivity() {
                                 )
 
                                 Button(onClick = { navController.navigate(Screen.DialogTestScreen) }) {
-                                    Text("dialog")
+                                    Text("navigation dialog")
+                                }
+                                var showDialog by rememberSaveable { mutableStateOf(false) }
+
+                                Button(onClick = { showDialog = true }) {
+                                    Text("normal dialog")
                                 }
 
+                                if (showDialog) {
+                                    AlertDialog(
+                                        onDismissRequest = { showDialog = false },
+                                        title = { Text("Test Dialog") },
+                                        text = { Text("test") },
+                                        confirmButton = {
+                                            Button(onClick = {
+                                                showDialog = false
+                                            }) { Text("Dismiss") }
+                                        }
+                                    )
+                                }
                             }
                             bottomSheet<Screen.BottomSheetWithParameters> { backStackEntry ->
                                 val id =
@@ -166,6 +188,7 @@ class MainActivity : ComponentActivity() {
 
 
                             dialog<Screen.DialogTestScreen> {
+
                                 Column(Modifier.background(Color.White)) {
                                     Text(
                                         text = "Dialog",
