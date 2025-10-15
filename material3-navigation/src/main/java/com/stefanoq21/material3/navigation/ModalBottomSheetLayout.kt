@@ -42,6 +42,7 @@ fun ModalBottomSheetLayout(
     modifier: Modifier = Modifier,
     sheetModifier: Modifier = Modifier,
     sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
+    sheetGesturesEnabled: Boolean = true,
     shape: Shape = BottomSheetDefaults.ExpandedShape,
     containerColor: Color = BottomSheetDefaults.ContainerColor,
     contentColor: Color = contentColorFor(containerColor),
@@ -65,6 +66,7 @@ fun ModalBottomSheetLayout(
         ModalBottomSheet(
             onDismissRequest = bottomSheetNavigator.onDismissRequest,
             modifier = sheetModifier,
+            sheetGesturesEnabled = sheetGesturesEnabled,
             sheetState = bottomSheetNavigator.sheetState,
             content = {
                 CompositionLocalProvider(
