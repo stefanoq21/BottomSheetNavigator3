@@ -20,24 +20,21 @@
 package com.stefanoq21.material3.navigation
 
 
-import androidx.activity.compose.BackHandler
+import android.util.Log
+import androidx.activity.compose.PredictiveBackHandler
+import androidx.compose.animation.*
+import androidx.compose.animation.core.SeekableTransitionState
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.rememberTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.util.fastForEach
 import androidx.navigation.FloatingWindow
 import androidx.navigation.NavBackStackEntry
@@ -48,11 +45,9 @@ import androidx.navigation.NavigatorState
 import androidx.navigation.compose.LocalOwnersProvider
 import com.stefanoq21.material3.navigation.BottomSheetNavigator.Destination
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 
 /**
@@ -152,7 +147,7 @@ public class BottomSheetNavigator(
         }
 
     /**
-     * Access properties of the [ModalBottomSheetLayout]'s [ModalBottomSheetState]
+     * Access properties of the [ModalBottomSheetLayout]'s [BottomSheetNavigatorSheetState]
      */
     public val navigatorSheetState: BottomSheetNavigatorSheetState =
         BottomSheetNavigatorSheetState(sheetState)
@@ -167,99 +162,189 @@ public class BottomSheetNavigator(
 
     private var animateToDismiss: () -> Unit = {}
 
+    private var animateBack: () -> Unit = {}
 
+
+    // Inspiration from
+    // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:navigation/navigation-compose/src/main/java/androidx/navigation/compose/NavHost.kt;l=338;drc=00f6c4d7634026174e04e1d8153b4ad8d9cea3fd
     internal val sheetInitializer: @Composable () -> Unit = {
         val saveableStateHolder = rememberSaveableStateHolder()
-        val transitionsInProgressEntries by transitionsInProgress.collectAsState()
 
 
-        // The latest back stack entry, retained until the sheet is completely hidden
-        // While the back stack is updated immediately, we might still be hiding the sheet, so
-        // we keep the entry around until the sheet is hidden
-        val retainedEntry by produceState<NavBackStackEntry?>(
-            initialValue = null,
-            key1 = backStack
-        ) {
-            backStack
-                .transform { backStackEntries ->
-                    // Always hide the sheet when the back stack is updated
-                    // Regardless of whether we're popping or pushing, we always want to hide
-                    // the sheet first before deciding whether to re-show it or keep it hidden
-                    try {
-                        sheetEnabled = false
-                    } catch (_: CancellationException) {
-                        // We catch but ignore possible cancellation exceptions as we don't want
-                        // them to bubble up and cancel the whole produceState coroutine
-                    } finally {
-                        emit(backStackEntries.lastOrNull())
-                    }
-                }
-                .collect {
-                    value = it
-                }
-        }
+        val backStack by backStack.collectAsState()
+        var progress by remember { mutableFloatStateOf(0f) }
+        var inPredictiveBack by remember { mutableStateOf(false) }
 
-        if (retainedEntry != null) {
-            val currentOnSheetShown by rememberUpdatedState {
-                transitionsInProgressEntries.forEach(state::markTransitionComplete)
-            }
-            LaunchedEffect(sheetState, retainedEntry) {
-                snapshotFlow { sheetState.isVisible }
-                    // We are only interested in changes in the sheet's visibility
-                    .distinctUntilChanged()
-                    // distinctUntilChanged emits the initial value which we don't need
-                    .drop(1)
-                    .collect { visible ->
-                        if (visible) {
-                            currentOnSheetShown()
-                        }
-                    }
-            }
+        val visibleEntries by transitionsInProgress.collectAsState()
+        val backStackEntry: NavBackStackEntry? = backStack.lastOrNull()
 
-            val scope = rememberCoroutineScope()
-
-            LaunchedEffect(key1 = retainedEntry) {
+        if (backStackEntry != null) {
+            // This is a fix for the sheet not displaying with correct height after activity re-create.
+            LaunchedEffect(Unit) {
                 sheetEnabled = true
-
-                sheetContent = {
-                    retainedEntry?.let { retainedEntry ->
-                        retainedEntry.LocalOwnersProvider(saveableStateHolder) {
-                            val content =
-                                (retainedEntry.destination as Destination).content
-                            content(retainedEntry)
-                        }
-                    }
-
-                }
-                onDismissRequest = {
-                    sheetEnabled = false
-                    retainedEntry?.let {
-                        state.pop(popUpTo = it, saveState = false)
-                    }
-                }
-
-                animateToDismiss = {
-                    scope
-                        .launch { sheetState.hide() }
-                        .invokeOnCompletion {
-                            onDismissRequest()
-                        }
-                }
             }
-
-            BackHandler {
-                animateToDismiss()
-            }
-
-        } else {
-            LaunchedEffect(key1 = Unit) {
-                sheetContent = {}
-                onDismissRequest = {}
-                animateToDismiss = {}
+            // Once sheet is enabled again, expand it in case it's stuck.
+            LaunchedEffect(sheetEnabled) {
+                if (sheetEnabled) sheetState.expand()
             }
         }
 
+        val transitionState = remember {
+            // The state returned here cannot be nullable cause it produces the input of the
+            // transitionSpec passed into the AnimatedContent and that must match the non-nullable
+            // scope exposed by the transitions on the NavHost and composable APIs.
+            SeekableTransitionState(backStackEntry)
+        }
+        val transition = rememberTransition(transitionState, label = "entry")
 
+        if (inPredictiveBack) {
+            LaunchedEffect(progress) {
+                val previousEntry = backStack[backStack.size - 2]
+                transitionState.seekTo(progress, previousEntry)
+            }
+        } else {
+            LaunchedEffect(backStackEntry) {
+                // This ensures we don't animate after the back gesture is cancelled and we
+                // are already on the current state
+                if (transitionState.currentState != backStackEntry) {
+                    backStackEntry?.let {
+                        transitionState.animateTo(it)
+                        state.markTransitionComplete(it)
+                    }
+                } else {
+                    // convert from nanoseconds to milliseconds
+                    val totalDuration = transition.totalDurationNanos / 1000000
+                    // When the predictive back gesture is cancel, we need to manually animate
+                    // the SeekableTransitionState from where it left off, to zero and then
+                    // snapTo the final position.
+                    animate(
+                        transitionState.fraction,
+                        0f,
+                        animationSpec = tween((transitionState.fraction * totalDuration).toInt())
+                    ) { value, _ ->
+                        this@LaunchedEffect.launch {
+                            if (value > 0) {
+                                // Seek the original transition back to the currentState
+                                transitionState.seekTo(value)
+                            }
+                            if (value == 0f) {
+                                // Once we animate to the start, we need to snap to the right state.
+                                transitionState.snapTo(backStackEntry)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        sheetContent = {
+            PredictiveBackHandler(backStack.size > 1) { backEvent ->
+                var currentBackStackEntry: NavBackStackEntry? = null
+                if (backStack.size > 1) {
+                    progress = 0f
+                    currentBackStackEntry = backStack.lastOrNull()
+                    state.prepareForTransition(currentBackStackEntry!!)
+                    val previousEntry = backStack[backStack.size - 2]
+                    state.prepareForTransition(previousEntry)
+                }
+                try {
+                    backEvent.collect {
+                        if (backStack.size > 1) {
+                            inPredictiveBack = true
+                            progress = it.progress
+                        }
+                    }
+                    if (backStack.size > 1) {
+                        inPredictiveBack = false
+                        popBackStack(currentBackStackEntry!!, false)
+                    }
+                } catch (_: CancellationException) {
+                    if (backStack.size > 1) {
+                        inPredictiveBack = false
+                    }
+                }
+            }
+            transition.AnimatedContent(
+                transitionSpec = {
+                    // If the initialState of the AnimatedContent is not in visibleEntries, we are in
+                    // a case where visible has cleared the old state for some reason, so instead of
+                    // attempting to animate away from the initialState, we skip the animation.
+                    if (initialState in visibleEntries) {
+                        ContentTransform(
+                            fadeIn(),
+                            fadeOut(),
+                            1f,
+                            SizeTransform(true)
+                        )
+                    } else {
+                        EnterTransition.None togetherWith ExitTransition.None
+                    }
+                },
+                contentKey = { it?.id }
+            ) {
+                // In some specific cases, such as clearing your back stack by changing your
+                // start destination, AnimatedContent can contain an entry that is no longer
+                // part of visible entries since it was cleared from the back stack and is not
+                // animating. In these cases the currentEntry will be null, and in those cases,
+                // AnimatedContent will just skip attempting to transition the old entry.
+                // See https://issuetracker.google.com/238686802
+                val isPredictiveBackCancelAnimation = transitionState.currentState == backStackEntry
+                val currentEntry =
+                    if (inPredictiveBack || isPredictiveBackCancelAnimation) {
+                        // We have to do this because the previous entry does not show up in
+                        // visibleEntries
+                        // even if we prepare it above as part of onBackStackChangeStarted
+                        it
+                    } else {
+                        visibleEntries.lastOrNull { entry -> it == entry }
+                    }
+
+                // while in the scope of the composable, we provide the currentEntry as the
+                // ViewModelStoreOwner and LifecycleOwner
+                currentEntry?.LocalOwnersProvider(saveableStateHolder) {
+                    val content = (currentEntry.destination as Destination).content
+                    content(currentEntry)
+                }
+            }
+        }
+
+        LaunchedEffect(backStack) {
+            onDismissRequest = {
+                // Clear state
+                backStack.reversed().forEach {
+                    state.pop(it, false)
+                }
+                sheetEnabled = false
+            }
+        }
+        val scope = rememberCoroutineScope()
+
+        animateToDismiss = {
+            // The order is important here.
+            // First, we mark the current screen as animating using popWithTransition.
+            // Then we animate the bottomsheet to hidden state.
+            // Once the sheet is hidden we remove it from the composition (sheetEnabled = false)
+            // and then mark the animation finished.
+            //
+            // This is necessary so that navigating from a bottom sheet to a normal
+            // destination will work fine. For example, BottomSheetWithClose to Zoom.
+            backStackEntry?.let { entry ->
+                state.popWithTransition(popUpTo = entry, saveState = false)
+                scope
+                    .launch { sheetState.hide() }
+                    .invokeOnCompletion {
+                        sheetEnabled = false
+                        state.markTransitionComplete(entry)
+                    }
+            }
+        }
+
+        animateBack = {
+            val current = backStack.lastOrNull()
+            current?.let {
+                state.popWithTransition(current, false)
+            }
+        }
     }
 
     override fun onAttach(state: NavigatorState) {
@@ -277,14 +362,27 @@ public class BottomSheetNavigator(
         navOptions: NavOptions?,
         navigatorExtras: Extras?
     ) {
-        onDismissRequest()
-        entries.fastForEach { entry ->
-            state.push(entry)
+        // Push new item with transition if bottomsheet is already open.
+        // If it's not, bottomsheet will animate the appearance anyway.
+        if (backStack.value.isNotEmpty()) {
+            entries.fastForEach { entry ->
+                state.pushWithTransition(entry)
+            }
+        } else {
+            sheetEnabled = true
+            entries.fastForEach { entry ->
+                state.push(entry)
+            }
         }
     }
 
     override fun popBackStack(popUpTo: NavBackStackEntry, savedState: Boolean) {
-        state.pop(popUpTo, savedState)
+        val backStack = state.backStack.value
+        if (backStack.firstOrNull() == popUpTo) {
+            animateToDismiss()
+        } else {
+            animateBack()
+        }
     }
 
     /**

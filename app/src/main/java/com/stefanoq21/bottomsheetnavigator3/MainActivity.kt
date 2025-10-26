@@ -151,7 +151,16 @@ class MainActivity : ComponentActivity() {
                                         // navController.navigate(Screen.DialogTestScreen)
                                     },
                                     onClickBack = {
-                                        onBackPressedDispatcher.onBackPressed()
+                                        navController.navigateUp()
+                                        // We should not be calling onBackPressed because the event is sent to both navigators at the same time.
+//                                        onBackPressedDispatcher.onBackPressed()
+                                        // You can uncomment this line and do the following to see the issue:
+                                        // 1. Home - go to Zoom.
+                                        // 2. Zoom - go to BottomSheetWithCloseScreen.
+                                        // 3. Click "Close for back".
+
+                                        // Expected: The bottom sheet closes and Zoom page is displayed.
+                                        // Actual: The bottom sheet closes as expected but Zoom is also popped from the backstack.
                                     },
                                     onClickGoToBottomSheet = {
                                         navController.navigate(Screen.BottomSheetWithParameters("testId-123"))
@@ -183,7 +192,9 @@ class MainActivity : ComponentActivity() {
                             bottomSheet<Screen.BottomSheetWithParameters> { backStackEntry ->
                                 val id =
                                     backStackEntry.toRoute<Screen.BottomSheetWithParameters>().id
-                                BSWithParametersLayout(id)
+                                BSWithParametersLayout(id, onPop = navController::popBackStack, openFullscreen = {
+                                    navController.navigate(Screen.BottomSheetFullScreen)
+                                })
                             }
 
 
