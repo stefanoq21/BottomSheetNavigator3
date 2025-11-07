@@ -3,6 +3,7 @@ package com.stefanoq21.bottomsheetnavigator3.presentation.screen.bottomSheetWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +15,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun BSWithParametersLayout(id: String) {
+fun BSWithParametersLayout(id: String, onPop: () -> Unit, openFullscreen: () -> Unit) {
     Column(Modifier.padding(12.dp)) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -22,6 +23,12 @@ fun BSWithParametersLayout(id: String) {
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
         )
+        Button(onClick = onPop) {
+            Text("Pop")
+        }
+        Button(onClick = openFullscreen) {
+            Text("Fullscreen sheet")
+        }
     }
 }
 
